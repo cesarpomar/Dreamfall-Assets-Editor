@@ -19,14 +19,15 @@ import java.util.List;
 
 public class Analizador implements Closeable {
 
+    private static Cabeceras cabs = new Cabeceras();//Gestor de cabeceras dinamicas
+
     private File fichero;               //Assets
     private RandomAccessFile raf;       //Fichero de entrada
     private Assets assets;              //Clase para guardar los datos
     ///Datos para el analisis
     private int tamCabecera;            //tamaño de las cabeceras de fichero
     private int tamIds;                 //tamaño de los ids antes de las lineas
-    private int espIdiomas;             //espacio antes de los idiomas
-    
+    protected int espacio;             //espacio antes de los idiomas
 
     public Analizador(File file) throws FileNotFoundException {
         raf = new RandomAccessFile(file, "r");
@@ -35,14 +36,17 @@ public class Analizador implements Closeable {
 
     public Assets leerAssets() throws Exception {
         leerDefinicionAssets();
-        //Buscar el contenido segun la version
-        if (assets.getVersion().startsWith("4.")) {
-            buscarContenidoV4();
-        } else {
-            buscarContenidoV5();
+        byte[] cabTexto = cabs.get(Cabeceras.TEXTO, assets.getVersion());
+        byte[] cabIdioma = cabs.get(Cabeceras.IDIOMA, assets.getVersion());
+        if (cabTexto == null || cabIdioma == null) {
+            cabs.buscar(this, assets, raf);
+            cabTexto = cabs.get(Cabeceras.TEXTO, assets.getVersion());
+            cabIdioma = cabs.get(Cabeceras.IDIOMA, assets.getVersion());
         }
+        buscarContenido(assets.getDefiniciones(), cabTexto, cabIdioma);
         return assets;
     }
+
 
     /*
      *Lee la cabecera de un archivo assets version unity 4
@@ -59,9 +63,9 @@ public class Analizador implements Closeable {
                     buffer.readInt(), buffer.readInt(), buffer.readInt());
         }
         assets.setDefiniciones(definiciones);
-                /*Definicones de la version*/
-        tamCabecera=20;
-        tamIds=48;
+        /*Definicones de la version*/
+        tamCabecera = 20;
+        tamIds = 48;
     }
 
     /*
@@ -72,16 +76,16 @@ public class Analizador implements Closeable {
         raf.read(buffer.getBuffer());
         buffer.skip(4);//Saltamos el separador
         buffer.skip(1);//Saltamos el byte en desuso
-        int nTipos=buffer.readInt();//Numero de tipos
-        int sumaTipos=5;//guardamos lo que ocupan para copiarlos directamente en la escritura
+        int nTipos = buffer.readInt();//Numero de tipos
+        int sumaTipos = 5;//guardamos lo que ocupan para copiarlos directamente en la escritura
         for (int i = 0; i < nTipos; i++) {
             int tipo = buffer.readInt();
             if (tipo < 0) {//El numero indica la longitud de la especificacion
                 buffer.skip(32);
-                sumaTipos+=36;
+                sumaTipos += 36;
             } else {
                 buffer.skip(16);
-                sumaTipos+=20;
+                sumaTipos += 20;
             }
         }
         assets.setEspecificaciondeTipos(sumaTipos);
@@ -99,9 +103,9 @@ public class Analizador implements Closeable {
         }
         assets.setDefiniciones(definiciones);
         /*Definicones de la version*/
-        tamCabecera=28;
-        tamIds=52;
-        espIdiomas=4;
+        tamCabecera = 28;
+        tamIds = 52;
+        espacio = 4;
     }
 
     /*
@@ -127,57 +131,30 @@ public class Analizador implements Closeable {
         }
     }
 
-    /*
-     *Busca un fichero dentro del assets
-     */
-    private void buscarContenidoV4() throws IOException {
-        byte[] cabFichero = new byte[20];  //Cabecera de un fichero
-        List<Fichero> lista = new ArrayList<>(10);
-        for (Definicion def : assets.getDefiniciones()) {
-            /*Moverse a inico bloque*/
-            raf.seek(assets.getInicioFicheros() + def.getPosicion());
-            raf.read(cabFichero);
-            /*Comprobamos los campos cabecera*/
-            if (cabFichero[17] == (byte) 0x01//TEXTO
-                    && cabFichero[16] == (byte) 0xF5
-                    && cabFichero[12] == (byte) 0x02
-                    && cabFichero[8] == (byte) 0x01) {
-                lista.add(ficheroTexto(def));
-            } else if (cabFichero[17] == (byte) 0x4//IDIOMA
-                    && cabFichero[16] == (byte) 0xB1
-                    && cabFichero[12] == (byte) 0x19
-                    && cabFichero[8] == (byte) 0x1) {
-                ficheroIdioma(def);
-            }
-        }
-        if (!lista.isEmpty()) {
-            Fichero[] ficheros = new Fichero[lista.size()];
-            lista.toArray(ficheros);
-            assets.setFicheros(ficheros);
-        }
-    }
 
     /*
      *Busca un fichero dentro del assets
      */
-    private void buscarContenidoV5() throws IOException {
+    protected void buscarContenido(Definicion[] definiciones, byte[] cabTexto, byte[] cabIdioma) throws IOException {
         byte[] cabFichero = new byte[20];  //Cabecera de un fichero
         List<Fichero> lista = new ArrayList<>(10);
-        for (Definicion def : assets.getDefiniciones()) {
+        for (Definicion def : definiciones) {
             /*Moverse a inico bloque*/
             raf.seek(assets.getInicioFicheros() + def.getPosicion());
-            raf.skipBytes(4);//Los primeros bytes son inutiles
+            raf.skipBytes(espacio);//Los primeros bytes son inutiles
             raf.read(cabFichero);
-            raf.skipBytes(4);//Los ultimos igual
-            if (cabFichero[17] == (byte) 0x02//TEXTO
-                    && (cabFichero[16] == (byte) 0x2A || cabFichero[16] == (byte) 0x2B)
-                    && cabFichero[12] == (byte) 0x01
-                    && cabFichero[8] == (byte) 0x01) {
+            raf.skipBytes(espacio);//Los ultimos igual
+            if (cabTexto != null
+                    && cabFichero[17] == cabTexto[0]//TEXTO
+                    && cabFichero[16] == cabTexto[1]
+                    && cabFichero[12] == cabTexto[2]
+                    && cabFichero[8] == cabTexto[3]) {
                 lista.add(ficheroTexto(def));
-            } else if (cabFichero[17] == (byte) 0x4//IDIOMA
-                    && cabFichero[16] == (byte) 0xFA
-                    && cabFichero[12] == (byte) 0x2
-                    && cabFichero[8] == (byte) 0x1) {
+            } else if (cabIdioma != null
+                    && cabFichero[17] == cabIdioma[0]//IDIOMA
+                    && cabFichero[16] == cabIdioma[1]
+                    && cabFichero[12] == cabIdioma[2]
+                    && cabFichero[8] == cabIdioma[3]) {
                 ficheroIdioma(def);
             }
         }
@@ -191,7 +168,7 @@ public class Analizador implements Closeable {
     /*
      * Analiza en texto dentro de un fichero
      */
-    private Fichero ficheroTexto(Definicion prop) throws IOException {
+    protected Fichero ficheroTexto(Definicion prop) throws IOException {
         Buffer buffer = new Buffer(prop.getTam() - tamCabecera);//Restamos la cabecera
         /*Almacenar todo el fichero*/
         raf.read(buffer.getBuffer());
@@ -298,7 +275,7 @@ public class Analizador implements Closeable {
         localizacion.setIndex(prop.getIndex());
         localizacion.setAssets(assets);
         //Saltamos un espacio si lo hay
-        buffer.skip(espIdiomas);
+        buffer.skip(espacio);
         //guardar el tamaño
         localizacion.setTamOrg(buffer.getBuffer().length);
         String[] voces = new String[buffer.readInt()];

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Gui;
 
 import Controlador.Controlador;
@@ -39,7 +34,7 @@ public class Grafica extends javax.swing.JFrame implements Igui {
     public Grafica() {
         initComponents();
         setLocationRelativeTo(null);
-        icono=new ImageIcon(getClass().getResource("/Gui/Images/logo.jpg")).getImage();
+        icono = new ImageIcon(getClass().getResource("/Gui/Images/logo.jpg")).getImage();
         setIconImage(icono);
         controlador = new Controlador(this);
         cargarChoosets();
@@ -171,7 +166,7 @@ public class Grafica extends javax.swing.JFrame implements Igui {
         popSubtitulo.add(borrarSubtitulo);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Dreamfall Assest Editor 1.2");
+        setTitle("Dreamfall Assest Editor 1.3");
         setIconImages(null);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -556,7 +551,7 @@ public class Grafica extends javax.swing.JFrame implements Igui {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void gestor_scriptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestor_scriptActionPerformed
-        ScriptGui a = new ScriptGui(this, true,icono);
+        ScriptGui a = new ScriptGui(this, true, icono);
         a.pack();
         a.setVisible(true);
     }//GEN-LAST:event_gestor_scriptActionPerformed
@@ -754,10 +749,12 @@ public class Grafica extends javax.swing.JFrame implements Igui {
 ///////////////////////////////PRUEBAS///////////////////////////////////    
     private void mostrarAssetsTestFile() {
         //controlador.leerAssets(new File("D:\\Program Files (x86)\\Dreamfall Chapters Special Edition\\Dreamfall Chapters_Data\\sharedassets57.assets"));
-        controlador.leerAssets(new File("D:\\Program Files\\Dreamfall Chapters\\Dreamfall Chapters_Data\\sharedassets4.assets"));
+        //controlador.leerAssets(new File("D:\\Program Files\\Dreamfall Chapters\\Dreamfall Chapters_Data\\sharedassets4.assets"));
         //controlador.leerAssets(new File("D:\\Program Files\\Dreamfall Chapters\\WIN64\\Dreamfall Chapters_Data\\resources.assets"));
-        //controlador.leerAssets(new File("D:\\Program Files (x86)\\Dreamfall Chapters Special Edition\\Dreamfall Chapters_Data\\resources.assets"));
-
+        controlador.leerAssets(new File("D:\\Program Files (x86)\\Dreamfall Chapters Special Edition\\Dreamfall Chapters_Data\\resources.assets"));
+        controlador.leerAssets(new File("D:\\Users\\Informatica\\otros\\Instalador\\Dreamfall_Linux\\original\\resources.assets"));
+        controlador.leerAssets(new File("D:\\Program Files (x86)\\Dreamfall Chapters Special Edition\\Dreamfall Chapters_Data\\sharedassets15.assets"));
+        controlador.leerAssets(new File("D:\\Users\\Informatica\\otros\\Instalador\\Dreamfall_Linux\\original\\sharedassets15.assets"));
     }
 
 }

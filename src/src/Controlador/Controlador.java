@@ -13,17 +13,30 @@ import Datos.Textos.Fichero;
 import Datos.Textos.Idioma;
 import Datos.Textos.Linea;
 import Datos.Textos.Textos;
-import Gui.Gui;
+import Gui.Consola;
+import Gui.Igui;
 import IO.Analizador;
 import IO.Conversion;
 import IO.Escritura;
 import IO.Exception.FormatException;
 import IO.XML;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import org.jdom2.JDOMException;
 
@@ -33,9 +46,9 @@ import org.jdom2.JDOMException;
  */
 public class Controlador {
 
-    private Gui interfaz;
+    private Igui interfaz;
 
-    public Controlador(Gui interfaz) {
+    public Controlador(Igui interfaz) {
         this.interfaz = interfaz;
     }
 
@@ -142,28 +155,28 @@ public class Controlador {
             Textos t = XML.leer(path);
             //Comprbar la validez del idioma
             if (t.getIdioma().length() != 2) {
-                JOptionPane.showMessageDialog(interfaz, "El idioma (" + t.getIdioma() + ") de (" + path.getName() + ") tiene un formato incorrecto.\n",
+                interfaz.mostrar("El idioma (" + t.getIdioma() + ") de (" + path.getName() + ") tiene un formato incorrecto.\n",
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return null;
             }
             return t;
         } catch (JDOMException ex) {
-            JOptionPane.showMessageDialog(interfaz, "El fichero XML ha perdido su integridad.\n"
+            interfaz.mostrar("El fichero XML ha perdido su integridad.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(interfaz, "No se ha encontrado el fichero XML.\n"
+            interfaz.mostrar("No se ha encontrado el fichero XML.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Ha ocurrido un error durante la lectura.\n"
+            interfaz.mostrar("Ha ocurrido un error durante la lectura.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Se ha encontrado un id en (" + path.getName() + ") que no es un número.\n",
+            interfaz.mostrar("Se ha encontrado un id en (" + path.getName() + ") que no es un número.\n",
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (ArrayIndexOutOfBoundsException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Se ha encontrado un id negativo en (" + path.getName() + ").\n",
+            interfaz.mostrar("Se ha encontrado un id negativo en (" + path.getName() + ").\n",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
         return null;
@@ -187,7 +200,7 @@ public class Controlador {
                 nuevos[i++] = s;
             } else {
                 //No puede haber dos iguales
-                JOptionPane.showMessageDialog(interfaz, "El subtítulo que intentas añadir ya existe.",
+                interfaz.mostrar("El subtítulo que intentas añadir ya existe.",
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -196,7 +209,7 @@ public class Controlador {
         //Ajustamos y lo guardamos
         ajustarLocalizacion(l, nuevos.length);
         l.setSubtitulos(nuevos);
-        JOptionPane.showMessageDialog(interfaz, "Subtitulo añadido correctamente, a partir de ahora el juego"
+        interfaz.mostrar("Subtitulo añadido correctamente, a partir de ahora el juego"
                 + "reconocera bloques con el nombre '" + idioma + "'",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -222,7 +235,7 @@ public class Controlador {
         //Ajustamos y lo guardamos
         ajustarLocalizacion(l, nuevos.length);
         l.setSubtitulos(nuevos);
-        JOptionPane.showMessageDialog(interfaz, "Subtitulo borrado correctamente, a partir de ahora el juego"
+        interfaz.mostrar("Subtitulo borrado correctamente, a partir de ahora el juego"
                 + "ignorara bloques con el nombre '" + idioma + "'",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -248,21 +261,21 @@ public class Controlador {
     public void leerAssets(File path) {
         try (Analizador ana = new Analizador(path)) {
             interfaz.nuevoAssets(ana.leerAssets());
-            JOptionPane.showMessageDialog(interfaz, "El Assets se ha cargado correctamente\n",
+            interfaz.mostrar("El Assets se ha cargado correctamente\n",
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(interfaz, "El archivo Assets ya no existe.\n"
+            interfaz.mostrar("El archivo Assets ya no existe.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Ha ocurrido un error de lectura.\n"
+            interfaz.mostrar("Ha ocurrido un error de lectura.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (FormatException ex) {
-            JOptionPane.showMessageDialog(interfaz, "El archivo no es compatible con la aplicación.\n",
+            interfaz.mostrar("El archivo no es compatible con la aplicación.\n",
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(interfaz, "El archivo Assets esta corrupto.\n",
+            interfaz.mostrar("El archivo Assets esta corrupto.\n",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
 
@@ -281,18 +294,18 @@ public class Controlador {
                 interfaz.nuevoAssets(ana.leerAssets());
                 ana.close();
             }
-            JOptionPane.showMessageDialog(interfaz, "Los Assets se ha cargado correctamente\n",
+            interfaz.mostrar("Los Assets se ha cargado correctamente\n",
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Un archivo Assets ya no existe.\n"
+            interfaz.mostrar("Un archivo Assets ya no existe.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Ha ocurrido un error de lectura.\n"
+            interfaz.mostrar("Ha ocurrido un error de lectura.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(interfaz, "Un archivo Assets esta corrupto o no es compatible"
+            interfaz.mostrar("Un archivo Assets esta corrupto o no es compatible"
                     + "con esta apliacion.\n",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -300,31 +313,26 @@ public class Controlador {
 
     public void escribirAssets(File path, Assets a) {
         try {
-            if (a.getVersion().startsWith("5.")) {
-                JOptionPane.showMessageDialog(interfaz, "No puedes guardar un assets unity 5.\n",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
             Escritura esc = new Escritura(a, path);
             if (esc.escribir()) {
-                JOptionPane.showMessageDialog(interfaz, "El Assets se ha guardado correctamente\n",
+                interfaz.mostrar("El Assets se ha guardado correctamente\n",
                         "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(interfaz, "El Assets se ha creado correctamente, pero "
+                interfaz.mostrar("El Assets se ha creado correctamente, pero "
                         + "no ha podido substituirse por el original.\n Puedes hacerlo manualmente borrando el original y eliminado"
                         + "la extensión '.temp' del fichero guardado.",
                         "Éxito", JOptionPane.WARNING_MESSAGE);
             }
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(interfaz, "El archivo Assets ya no existe.\n"
+            interfaz.mostrar("El archivo Assets ya no existe.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Ha ocurrido un error de escritura.\n"
+            interfaz.mostrar("Ha ocurrido un error de escritura.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(interfaz, "Ha ocurrido un error inesperado durante la escritura.\n"
+            interfaz.mostrar("Ha ocurrido un error inesperado durante la escritura.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -339,14 +347,14 @@ public class Controlador {
     public void exportar(File path, Idioma idioma) {
         try {
             XML.escribir(path, new Textos(idioma));
-            JOptionPane.showMessageDialog(interfaz, "El fichero se ha exportado correctamente\n",
+            interfaz.mostrar("El fichero se ha exportado correctamente\n",
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(interfaz, "No se ha podido crear el fichero.\n"
+            interfaz.mostrar("No se ha podido crear el fichero.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Error de escritura\n"
+            interfaz.mostrar("Error de escritura\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -367,14 +375,14 @@ public class Controlador {
                 XML.escribir(new File(path, f.getNombre() + "_" + idioma + "_" + p + ".xml"), new Textos(b.getIdiomas().get(idioma)));
                 p++;
             }
-            JOptionPane.showMessageDialog(interfaz, "Los ficheros se han exportado correctamente\n",
+            interfaz.mostrar("Los ficheros se han exportado correctamente\n",
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(interfaz, "No se ha podido crear un fichero.\n"
+            interfaz.mostrar("No se ha podido crear un fichero.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Error de escritura\n"
+            interfaz.mostrar("Error de escritura\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -394,14 +402,14 @@ public class Controlador {
         if (Arrays.equals(org.getBloque().getId(), t.getId())) {
             if (org.getIdioma().equals(t.getIdioma())) {
                 crearIdioma(org, org.getIdioma(), t.getLineas());
-                JOptionPane.showMessageDialog(interfaz, "El fichero se ha importado correctamente.\n",
+                interfaz.mostrar("El fichero se ha importado correctamente.\n",
                         "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(interfaz, "El fichero no pertenece a este idioma.\n",
+                interfaz.mostrar("El fichero no pertenece a este idioma.\n",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            JOptionPane.showMessageDialog(interfaz, "El fichero no pertenece a este bloque.\n",
+            interfaz.mostrar("El fichero no pertenece a este bloque.\n",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -435,7 +443,7 @@ public class Controlador {
             }
 
         }
-        JOptionPane.showMessageDialog(interfaz, "Se han cargado " + cargados + " xml de " + xml.length + "xml.\n",
+        interfaz.mostrar("Se han cargado " + cargados + " xml de " + xml.length + "xml.\n",
                 "Terminado", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -458,7 +466,7 @@ public class Controlador {
             //creamos el idioma
             crearIdioma(idioma, nombre, lineas);
         }
-        JOptionPane.showMessageDialog(interfaz, "El idioma '" + nombre + "' se ha creado correctamente, para que el juego"
+        interfaz.mostrar("El idioma '" + nombre + "' se ha creado correctamente, para que el juego"
                 + "lo reconozca el idioma debe ser añadido en el Assets de subtitulos.\n",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -470,7 +478,7 @@ public class Controlador {
      */
     public void borrar(Idioma idioma) {
         borrarIdioma(idioma);
-        JOptionPane.showMessageDialog(interfaz, "El idioma bloque se ha borrado correctamente\n",
+        interfaz.mostrar("El idioma bloque se ha borrado correctamente\n",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -483,11 +491,14 @@ public class Controlador {
         for (Bloque b : f.getBloque()) {
             borrarIdioma(b.getIdiomas().get(idioma));
         }
-        JOptionPane.showMessageDialog(interfaz, "El idioma '" + idioma + "' se ha borrado correctamente\n",
+        interfaz.mostrar("El idioma '" + idioma + "' se ha borrado correctamente\n",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private String toMl(String tex) {
+    /*
+    Ajusta la cantidad de caracteres que se muestran en una linea
+     */
+    private static String toMl(String tex) {
         StringBuilder lineas = new StringBuilder(tex);
         int lineaMax = 100;//Caracteres por linea
         for (int i = 0; i < tex.length(); i = i + lineaMax) {
@@ -496,6 +507,9 @@ public class Controlador {
         return lineas.toString();
     }
 
+    /*
+    Cambiar el idioma de un xml actualizando el orden de las lineas
+     */
     public void cambiarIdioma(File path, String nuevo, Assets[] assets) {
         try {
             Textos t = importarXml(path);
@@ -517,7 +531,7 @@ public class Controlador {
                 }
             }
             if (org == null || dest == null) {
-                JOptionPane.showMessageDialog(interfaz, "Para realizar esta operación debes"
+                interfaz.mostrar("Para realizar esta operación debes"
                         + "tener el Assets correspondiente abierto.\n", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -526,24 +540,27 @@ public class Controlador {
             t.setIdioma(nuevo);
             XML.escribir(salida, t);
             if (path.delete() && salida.renameTo(path)) {
-                JOptionPane.showMessageDialog(interfaz, "El idioma del archivo ha sido cambiado.\n",
+                interfaz.mostrar("El idioma del archivo ha sido cambiado.\n",
                         "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(interfaz, "El idioma del archivo ha sido cambiado"
+                interfaz.mostrar("El idioma del archivo ha sido cambiado"
                         + "pero no se ha podido sustituirlo por el original.",
                         "Éxito", JOptionPane.WARNING_MESSAGE);
             }
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(interfaz, "No se ha podido modificar el fichero.\n"
+            interfaz.mostrar("No se ha podido modificar el fichero.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Error de escritura\n"
+            interfaz.mostrar("Error de escritura\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    /*
+    Cambiar el orden de las lineas del idioma actual al nuevo
+     */
     private String[] ajustarLineasO(Linea[] org, Linea[] dest, Textos t) {
         String[] listas = new String[org.length];
         HashMap<String, Integer> posicion = new HashMap<>(listas.length);
@@ -559,29 +576,161 @@ public class Controlador {
         return listas;
     }
 
+    /*
+    Actualiza un xml con .ref de la version extractor a la editor
+     */
     public void actualizarXmlRef(File path) {
         try {
             if (!new File(path.getAbsolutePath() + ".ref").exists()) {
-                JOptionPane.showMessageDialog(interfaz, "No se ha encontrado el archivo .ref\n",
+                interfaz.mostrar("No se ha encontrado el archivo .ref\n",
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             XML.actualizarXmlRef(path);
-            JOptionPane.showMessageDialog(interfaz, "El XML se ha actualizado correctamente.\n",
+            interfaz.mostrar("El XML se ha actualizado correctamente.\n",
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (JDOMException ex) {
-            JOptionPane.showMessageDialog(interfaz, "El fichero XML ha perdido su integridad.\n"
+            interfaz.mostrar("El fichero XML ha perdido su integridad.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(interfaz, "No se ha encontrado el fichero XML.\n"
+            interfaz.mostrar("No se ha encontrado el fichero XML.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(interfaz, "Ha ocurrido un error durante la lectura.\n"
+            interfaz.mostrar("Ha ocurrido un error durante la lectura.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+//-------------------------SCRIPS------------------------
 
+    /**
+     * Obtiene los comandos desde los argumentos del programa
+     *
+     * @param args Lista de comandos y argumentos mezclados
+     * @return Comandos con sus respectivos argumentos
+     */
+    public String[][] getComandos(String[] args) {
+        ArrayList<String> cmds = null;
+        ArrayList<ArrayList<String>> lista = new ArrayList<>(10);
+        for (String arg : args) {
+            if (arg.startsWith("-")) {
+                if (cmds != null) {
+                    lista.add(cmds);
+                }
+                cmds = new ArrayList<>(10);
+            }
+            if (cmds != null) {
+                cmds.add(arg);
+            }
+        }
+        if (cmds != null) {
+            lista.add(cmds);
+        }
+        //Generamos la matriz de comandos con argumentos
+        String m[][] = null;
+        if (!lista.isEmpty()) {
+            m = new String[lista.size()][];
+            for (int i = 0; i < lista.size(); i++) {
+                if (!lista.get(i).isEmpty()) {
+                    m[i] = lista.get(i).toArray(new String[1]);
+                }
+            }
+        }
+        return m;
+    }
+
+    public static void guardarScript(JDialog d, File ruta, String[] comandos) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(ruta));
+            for (String comando : comandos) {
+                bw.write(comando);
+                bw.newLine();
+            }
+            bw.close();
+            JOptionPane.showMessageDialog(d, "Script guardado correctamente", "Exito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(d, "No se ha podido guardar el script.\n"
+                    + "Error:\n" + toMl(ex.getMessage()), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void exportarScript(JDialog d, File ruta, String[] comandos) {
+        String jar = "DreamfallAssetsEditor.jar";
+        String sep = System.getProperty("file.separator");
+        String java = "\""+System.getProperty("java.home") + sep + "bin" + sep + "java\"";
+
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(ruta));
+            bw.write(java + " ");
+            bw.write("-jar ");
+            bw.write(jar + " ");
+            for (String comando : comandos) {
+                bw.write(comando + " ");
+            }
+            bw.close();
+            JOptionPane.showMessageDialog(d, "Script exportado correctamente", "Exito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(d, "No se ha podido exportar el script.\n"
+                    + "Error:\n" + toMl(ex.getMessage()), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static String[] abrirScript(JDialog d, File ruta) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(ruta));
+            List<String> comandos = new ArrayList<>(10);
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                comandos.add(linea);
+            }
+            br.close();
+            return comandos.toArray(new String[]{});
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(d, "No se ha podido abrir el script.\n"
+                    + "Error:\n" + toMl(ex.getMessage()), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return null;
+    }
+
+    public static void ejecutarScript(JDialog d, String[] comandos) {
+        List<String> args = new ArrayList<>(comandos.length * 4);
+        StringBuilder sb = new StringBuilder(300);
+        for (String comando : comandos) {
+            char[] array = comando.toCharArray();
+            for (int i = 0; i < array.length; i++) {
+                if (array[i] == '"') {
+                    i++;
+                    while (i < array.length && array[i] != '"') {
+                        sb.append(array[i]);
+                        i++;
+                    }
+                } else if (array[i] != ' ') {
+                    sb.append(array[i]);
+                } else {
+                    args.add(sb.toString());
+                    sb = new StringBuilder(300);
+                }
+            }
+            if (sb.length() > 0) {
+                args.add(sb.toString());
+                sb = new StringBuilder(300);
+            }
+        }
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("log.txt"));
+            System.setOut(new PrintStream(bos));
+            new Consola(args.toArray(new String[]{}));
+            bos.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.setOut(System.out);
+        JOptionPane.showMessageDialog(d, "El script ha terminado su ejecución, comprueba\n"
+                + "el fichero log.txt para comprobar si se ejecutó\n"
+                + "correctamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+    }
 }

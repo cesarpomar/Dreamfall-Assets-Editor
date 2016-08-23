@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <NonVisualComponents>
+    <Container class="javax.swing.JPanel" name="abrir_xml">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="abrir_xml_text" min="-2" max="-2" attributes="0"/>
+                      <Component id="abrir_xml_text2" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="abrir_xml_fichero" alignment="0" min="-2" pref="111" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="abrir_xml_ruta" min="-2" pref="297" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="abrir_xml_chooser" min="-2" pref="85" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="abrir_xml_text" alignment="3" pref="31" max="32767" attributes="0"/>
+                      <Component id="abrir_xml_ruta" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="abrir_xml_chooser" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="abrir_xml_text2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="abrir_xml_fichero" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JTextField" name="abrir_xml_ruta">
+        </Component>
+        <Component class="javax.swing.JButton" name="abrir_xml_chooser">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Abrir"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="abrir_xml_chooserActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="abrir_xml_text">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Carpeta xml"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="abrir_xml_text2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nombre fichero"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="abrir_xml_fichero">
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="export_asset">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="exportar_xml_text2" min="-2" max="-2" attributes="0"/>
+                      <Component id="exportar_xml_text1" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="exportar_xml_text3" alignment="1" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="exportar_xml_ruta" min="-2" pref="297" max="-2" attributes="0"/>
+                              <Component id="exportar_xml_fichero" min="-2" pref="110" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="exportar_xml_chooser" min="-2" pref="85" max="-2" attributes="0"/>
+                      </Group>
+                      <Component id="exportar_xml_idioma" min="-2" pref="110" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="exportar_xml_text1" alignment="3" pref="31" max="32767" attributes="0"/>
+                      <Component id="exportar_xml_ruta" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="exportar_xml_chooser" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="exportar_xml_text3" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="exportar_xml_fichero" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="exportar_xml_text2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="exportar_xml_idioma" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JTextField" name="exportar_xml_ruta">
+        </Component>
+        <Component class="javax.swing.JButton" name="exportar_xml_chooser">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Abrir"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportar_xml_chooserActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="exportar_xml_text1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Carpeta xml"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="exportar_xml_text3">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nombre fichero"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="exportar_xml_fichero">
+        </Component>
+        <Component class="javax.swing.JLabel" name="exportar_xml_text2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nombre idioma"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="exportar_xml_idioma">
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="nuevo_idioma">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="1" attributes="0">
+                  <Component id="nuevo_idioma_text3" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="nuevo_idioma_ref" min="-2" pref="110" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" alignment="1" attributes="0">
+                  <Component id="nuevo_idioma_text2" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="nuevo_idioma_nuevo" min="-2" pref="110" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" alignment="1" attributes="0">
+                  <Component id="nuevo_idioma_text1" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="nuevo_idioma_fichero" min="-2" pref="110" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="nuevo_idioma_text1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="nuevo_idioma_fichero" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="nuevo_idioma_text2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="nuevo_idioma_nuevo" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="nuevo_idioma_text3" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="nuevo_idioma_ref" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="nuevo_idioma_text1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nombre fichero"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="nuevo_idioma_fichero">
+        </Component>
+        <Component class="javax.swing.JTextField" name="nuevo_idioma_nuevo">
+        </Component>
+        <Component class="javax.swing.JLabel" name="nuevo_idioma_text2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nuevo idioma"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="nuevo_idioma_ref">
+        </Component>
+        <Component class="javax.swing.JLabel" name="nuevo_idioma_text3">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Idioma referencia"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="borrar_idioma">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="borrar_idioma_text2" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="borrar_idioma_nombre" min="-2" pref="110" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="borrar_idioma_text1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="borrar_idioma_fichero" min="-2" pref="110" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="borrar_idioma_text1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="borrar_idioma_fichero" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="borrar_idioma_text2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="borrar_idioma_nombre" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="borrar_idioma_text1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nombre fichero"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="borrar_idioma_fichero">
+        </Component>
+        <Component class="javax.swing.JTextField" name="borrar_idioma_nombre">
+        </Component>
+        <Component class="javax.swing.JLabel" name="borrar_idioma_text2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Idioma"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="title" type="java.lang.String" value="Gestor Scripts"/>
+    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+      <Color blue="ff" green="ff" red="ff" type="rgb"/>
+    </Property>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
+              <Component id="jScrollPane1" min="-2" pref="270" max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+              <Component id="fondo" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <Component id="jScrollPane1" min="-2" pref="250" max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+          </Group>
+          <Component id="fondo" alignment="0" max="32767" attributes="0"/>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTable" name="tabla">
+          <Properties>
+            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+              <Table columnCount="1" rowCount="1">
+                <Column editable="false" title="Funciones" type="java.lang.String"/>
+              </Table>
+            </Property>
+            <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+              <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+              </TableColumnModel>
+            </Property>
+            <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
+              <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable(){&#xa;    public String getToolTipText(MouseEvent event)&#xa;    {&#xa;        int row = convertColumnIndexToModel(rowAtPoint(event.getPoint()));&#xa;        int col  = convertColumnIndexToModel(columnAtPoint(event.getPoint()));&#xa;        DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();&#xa;        Object sel=modelo.getValueAt(row, col);&#xa;        if(sel instanceof String){&#xa;            return (String)sel;&#xa;        }&#xa;        return getColumnName(col);&#xa;    }&#xa;}; "/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="fondo">
+      <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="add" max="32767" attributes="0"/>
+                      <Component id="remove" alignment="0" pref="88" max="32767" attributes="0"/>
+                      <Component id="open" alignment="0" pref="88" max="32767" attributes="0"/>
+                      <Component id="save" alignment="0" pref="88" max="32767" attributes="0"/>
+                      <Component id="export" alignment="1" pref="88" max="32767" attributes="0"/>
+                      <Component id="run" alignment="1" pref="88" max="32767" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="add" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="remove" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="open" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="save" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="export" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="run" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JButton" name="add">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="A&#xf1;adir"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="remove">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Eliminar"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="open">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Abrir"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="save">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Guardar"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="export">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Exportar"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="run">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Ejecutar"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runActionPerformed"/>
+          </Events>
+        </Component>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

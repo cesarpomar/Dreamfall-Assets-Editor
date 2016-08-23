@@ -24,7 +24,7 @@ public class Analizador implements Closeable {
     private Assets assets;              //Clase para guardar los datos
     ///Datos para el analisis
     private int tamCabecera;            //tamaño de las cabeceras de fichero
-    private int tamIds;                 //tamñaode los ids antes de las lineas
+    private int tamIds;                 //tamaño de los ids antes de las lineas
     private int espIdiomas;             //espacio antes de los idiomas
     
 
@@ -72,15 +72,19 @@ public class Analizador implements Closeable {
         raf.read(buffer.getBuffer());
         buffer.skip(4);//Saltamos el separador
         buffer.skip(1);//Saltamos el byte en desuso
-        assets.setEspecificaciondeTipos(buffer.readInt());
-        for (int i = 0; i < assets.getEspecificaciondeTipos(); i++) {
+        int nTipos=buffer.readInt();//Numero de tipos
+        int sumaTipos=5;//guardamos lo que ocupan para copiarlos directamente en la escritura
+        for (int i = 0; i < nTipos; i++) {
             int tipo = buffer.readInt();
-            if (tipo < 0) {//El numero indica laa longitud de la especificacion
+            if (tipo < 0) {//El numero indica la longitud de la especificacion
                 buffer.skip(32);
+                sumaTipos+=36;
             } else {
                 buffer.skip(16);
+                sumaTipos+=20;
             }
         }
+        assets.setEspecificaciondeTipos(sumaTipos);
         assets.setNumeroFicheros(buffer.readInt());
         /*Saltamos los bytes de mayor precision, por ahora es dicifil que haya mas de 2^32 archivos*/
         buffer.skip(3);
@@ -166,7 +170,7 @@ public class Analizador implements Closeable {
             raf.read(cabFichero);
             raf.skipBytes(4);//Los ultimos igual
             if (cabFichero[17] == (byte) 0x02//TEXTO
-                    && cabFichero[16] == (byte) 0x2A
+                    && (cabFichero[16] == (byte) 0x2A || cabFichero[16] == (byte) 0x2B)
                     && cabFichero[12] == (byte) 0x01
                     && cabFichero[8] == (byte) 0x01) {
                 lista.add(ficheroTexto(def));
@@ -226,7 +230,7 @@ public class Analizador implements Closeable {
         basura.add(4);
         for (int i = 0; i < nIds; i++) {
             buffer.skip(tamIds);
-             basura.add(tamIds);
+            basura.add(tamIds);
         }
         //Inicio de los idiomas
         int inicioIdiomas = buffer.getPosicion();
@@ -275,7 +279,7 @@ public class Analizador implements Closeable {
         buffer.skip(1);//saltar 0A
         linea.setTamLinea(buffer.readCompressInt());
         linea.setTexto(buffer.readString(linea.getTamLinea()));//Leer texto
-        if (buffer.get() == 0x10) {//Si la liena termina con 10 02
+        if (buffer.hasNext(1) && buffer.get() == 0x10) {//Si la liena termina con 10 02
             buffer.skip(2);//lo saltamos
             linea.setFinLinea(true);//y lo tenemos en cuenta
         }
@@ -286,7 +290,7 @@ public class Analizador implements Closeable {
      * Analiza el idioma contenido en el fichero
      */
     private void ficheroIdioma(Definicion prop) throws IOException {
-        Buffer buffer = new Buffer(prop.getTam() - 20);//Restamos la cabecera
+        Buffer buffer = new Buffer(prop.getTam() - tamCabecera);//Restamos la cabecera
         /*Almacenar todo el fichero*/
         raf.read(buffer.getBuffer());
         //Leer nomber fichero

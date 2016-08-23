@@ -13,15 +13,11 @@ import Datos.Textos.Bloque;
 import Datos.Textos.Fichero;
 import Datos.Textos.Idioma;
 import java.awt.Desktop;
+import java.awt.Image;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -35,16 +31,16 @@ import javax.swing.tree.TreePath;
  *
  * @author César
  */
-public class Gui extends javax.swing.JFrame {
+public class Grafica extends javax.swing.JFrame implements Igui {
 
     /**
      * Creates new form Gui
      */
-    public Gui() {
+    public Grafica() {
         initComponents();
         setLocationRelativeTo(null);
-        setIconImage(new ImageIcon(getClass().getResource("/Gui/Images/logo.jpg")
-        ).getImage());
+        icono=new ImageIcon(getClass().getResource("/Gui/Images/logo.jpg")).getImage();
+        setIconImage(icono);
         controlador = new Controlador(this);
         cargarChoosets();
         //mostrarAssetsTestFile();
@@ -84,6 +80,8 @@ public class Gui extends javax.swing.JFrame {
         cerrarTodo = new javax.swing.JMenuItem();
         separadorMenu = new javax.swing.JPopupMenu.Separator();
         salir = new javax.swing.JMenuItem();
+        script = new javax.swing.JMenu();
+        gestor_script = new javax.swing.JMenuItem();
         herramientas = new javax.swing.JMenu();
         cambiarIdiomaXml = new javax.swing.JMenuItem();
         actualizarXmlRef = new javax.swing.JMenuItem();
@@ -173,7 +171,8 @@ public class Gui extends javax.swing.JFrame {
         popSubtitulo.add(borrarSubtitulo);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Dreamfall Assest Editor 1.1 beta");
+        setTitle("Dreamfall Assest Editor 1.2");
+        setIconImages(null);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -227,6 +226,18 @@ public class Gui extends javax.swing.JFrame {
         archivo.add(salir);
 
         menuSuperior.add(archivo);
+
+        script.setText("Script");
+
+        gestor_script.setText("Abrir gestor");
+        gestor_script.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gestor_scriptActionPerformed(evt);
+            }
+        });
+        script.add(gestor_script);
+
+        menuSuperior.add(script);
 
         herramientas.setText("Herramientas");
 
@@ -537,17 +548,27 @@ public class Gui extends javax.swing.JFrame {
     }//GEN-LAST:event_clandlanActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        String mensaje="Yo, Dreamfall Assets Editor fui creado por César Pomar con el unico propósito "
+        String mensaje = "Yo, Dreamfall Assets Editor fui creado por César Pomar con el unico propósito "
                 + "\nde ayudarte a traducir Dreamfall Chapters al castellano. Si me encuentras algún error "
                 + "\no quieres que aprenda a hacer más cosas, encontrarás a mi creador en el foro de Clan Dlan.";
-        
+
         JOptionPane.showMessageDialog(this, mensaje, "About", -1);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void gestor_scriptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestor_scriptActionPerformed
+        ScriptGui a = new ScriptGui(this, true,icono);
+        a.pack();
+        a.setVisible(true);
+    }//GEN-LAST:event_gestor_scriptActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        if (args.length > 0) {
+            new Consola(args);
+            return;
+        }
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -561,16 +582,16 @@ public class Gui extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Grafica.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Grafica.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Grafica.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Grafica.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        new Gui().setVisible(true);
+        new Grafica().setVisible(true);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -590,6 +611,7 @@ public class Gui extends javax.swing.JFrame {
     private javax.swing.JMenuItem clandlan;
     private javax.swing.JMenuItem exportarBloque;
     private javax.swing.JMenuItem exportarIdioma;
+    private javax.swing.JMenuItem gestor_script;
     private javax.swing.JMenuItem guardarComo;
     private javax.swing.JMenu herramientas;
     private javax.swing.JMenuItem importarBloque;
@@ -605,12 +627,14 @@ public class Gui extends javax.swing.JFrame {
     private javax.swing.JPopupMenu popLocalizacion;
     private javax.swing.JPopupMenu popSubtitulo;
     private javax.swing.JMenuItem salir;
+    private javax.swing.JMenu script;
     private javax.swing.JPopupMenu.Separator separadorMenu;
     // End of variables declaration//GEN-END:variables
 
     private JFileChooser chooserAssets;
     private JFileChooser chooserXml;
     private Controlador controlador;
+    private Image icono;
 
     private void cargarChoosets() {
         //de assets
@@ -632,11 +656,11 @@ public class Gui extends javax.swing.JFrame {
         }
     }
 
-    public DefaultTreeModel getModelo() {
+    private DefaultTreeModel getModelo() {
         return (DefaultTreeModel) arbol.getModel();
     }
 
-    public DefaultMutableTreeNode getSelecion() {
+    private DefaultMutableTreeNode getSelecion() {
         TreePath path = arbol.getSelectionPath();
         if (path != null) {
             return ((DefaultMutableTreeNode) path.getLastPathComponent());
@@ -644,6 +668,7 @@ public class Gui extends javax.swing.JFrame {
         return null;
     }
 
+    @Override
     public Assets[] getAssets() {
         //obtenemos las raiz
         DefaultMutableTreeNode raiz = (DefaultMutableTreeNode) getModelo().getRoot();
@@ -692,6 +717,7 @@ public class Gui extends javax.swing.JFrame {
 
     }
 
+    @Override
     public void nuevoAssets(Assets a) {
         DefaultTreeModel modelo = (DefaultTreeModel) arbol.getModel();
         DefaultMutableTreeNode raiz = (DefaultMutableTreeNode) modelo.getRoot();
@@ -720,10 +746,17 @@ public class Gui extends javax.swing.JFrame {
         modelo.insertNodeInto(assets, dreamfall, dreamfall.getChildCount());
     }
 
+    @Override
+    public void mostrar(Object message, String title, int messageType) {
+        JOptionPane.showMessageDialog(this, message, title, messageType);
+    }
+
 ///////////////////////////////PRUEBAS///////////////////////////////////    
-    public void mostrarAssetsTestFile() {
-        controlador.leerAssets(new File("D:\\Program Files (x86)\\Dreamfall Chapters Special Edition\\Dreamfall Chapters_Data\\sharedassets57.assets"));
-        controlador.leerAssets(new File("D:\\Users\\Informatica\\otros\\Assert\\Unity 5\\sharedassets57.assets"));
+    private void mostrarAssetsTestFile() {
+        //controlador.leerAssets(new File("D:\\Program Files (x86)\\Dreamfall Chapters Special Edition\\Dreamfall Chapters_Data\\sharedassets57.assets"));
+        controlador.leerAssets(new File("D:\\Program Files\\Dreamfall Chapters\\Dreamfall Chapters_Data\\sharedassets4.assets"));
+        //controlador.leerAssets(new File("D:\\Program Files\\Dreamfall Chapters\\WIN64\\Dreamfall Chapters_Data\\resources.assets"));
+        //controlador.leerAssets(new File("D:\\Program Files (x86)\\Dreamfall Chapters Special Edition\\Dreamfall Chapters_Data\\resources.assets"));
 
     }
 

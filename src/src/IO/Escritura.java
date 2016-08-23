@@ -18,6 +18,9 @@ public class Escritura implements Closeable {
     private File salida;                //Archivo de salida final 
     private File temp;                  //Archivo temporal de salida
     private Printer printer;            //Gestion de entrada y salida
+    ///Datos para el analisis
+    private int cabFichero;             //tamaño de las cabecera del fichero
+    private boolean localizacion;         //espacio antes de los idiomas
 
     public Escritura(Assets a, File salida) throws FileNotFoundException {
         assets = a;
@@ -28,7 +31,11 @@ public class Escritura implements Closeable {
 
     public boolean escribir() throws IOException {
         //Escribir la cabecera
-        escribirCabecera();
+        if (assets.getVersion().startsWith("4.")) {
+            escribirCabeceraV4();
+        } else {
+            escribirCabeceraV5();
+        }
         if (assets.getFicheros() != null) {
             //Recorremos los ficheros
             for (Fichero f : assets.getFicheros()) {
@@ -42,7 +49,7 @@ public class Escritura implements Closeable {
         }
         //Si el archivo contiene localizacion
         if (assets.getLocalizacion() != null) {
-            Definicion def = assets.getDefiniciones()[assets.getLocalizacion().getIndex()-1];
+            Definicion def = assets.getDefiniciones()[assets.getLocalizacion().getIndex() - 1];
             //Calculamos la posicion del fichero
             int espacio = def.getPosicion() + assets.getInicioFicheros();
             //Copiamos la entrada tal cual hasta ese punto
@@ -55,15 +62,40 @@ public class Escritura implements Closeable {
         //Cerramos los archivos
         printer.close();
         //Ponemos al fichero salida su nombre final
-        boolean renombrado=true;
+        boolean renombrado = true;
         if (salida.exists()) {
-            renombrado&=salida.delete();
+            renombrado &= salida.delete();
         }
-        renombrado&=temp.renameTo(salida);
+        renombrado &= temp.renameTo(salida);
         return renombrado;
     }
 
-    private void escribirCabecera() throws IOException {
+    private void escribirCabeceraV5() throws IOException {
+        //Escribimos el tamaño cabecera
+        printer.printBigEndian(assets.getTamCabecera());
+        //Escribimos el tamaño del Assets
+        printer.printBigEndian(assets.getTamAssets());
+        //Saltamos hasta los tipos
+        printer.copiar(24);
+        //copiamos los tipos tal cual
+        printer.copiar(assets.getEspecificaciondeTipos());
+        //copiamos el numero de fichero
+        printer.copiar(7);
+        //Imprimimos los punteros
+        for (Definicion def : assets.getDefiniciones()) {
+            printer.print(def.getIndex());
+            printer.copiar(4);//campo vacio
+            printer.print(def.getPosicion());
+            printer.print(def.getTam());
+            printer.print(def.getTipo());
+            printer.print(def.getUc());
+            printer.copiar(4);//campo vacio
+        }
+        localizacion=true;
+        cabFichero=28;
+    }
+
+    private void escribirCabeceraV4() throws IOException {
         //Escribimos el tamaño cabecera
         printer.printBigEndian(assets.getTamCabecera());
         //Escribimos el tamaño del Assets
@@ -78,17 +110,23 @@ public class Escritura implements Closeable {
             printer.print(def.getTipo());
             printer.print(def.getUc());
         }
+        localizacion=false;
+        cabFichero=20;
     }
 
     private void escribirLocalizacion(Definicion def) throws IOException {
         Localizacion l = assets.getLocalizacion();
-        printer.copiar(20); //saltar cabecera fichero
+        printer.copiar(cabFichero); //saltar cabecera fichero
         printer.setLeerEscritura(false);
         /*AVANZAR LECTURA*/
-        printer.skip(l.getTamOrg());      
+        printer.skip(l.getTamOrg());
         /*ESCRITURA*/
         printer.print(l.getNombre().length());
         printer.printM4(l.getNombre());
+        //hay espacios despues del nombre
+        if(localizacion){
+            printer.print(1);
+        }
         //Escribimos las voces
         printer.print(l.getVoces().length);
         for (String s : l.getVoces()) {
@@ -104,12 +142,14 @@ public class Escritura implements Closeable {
         //Escribimos la version 
         printer.print(l.getVersion().length());
         printer.printM4(l.getVersion());
-        printer.printM4(new byte[12]);//espacio final
+        printer.print(0);//espacio final
+        printer.print(0);
+        printer.print(0);
         printer.setLeerEscritura(true);
     }
 
     private void escribirFichero(Fichero f) throws IOException {
-        printer.copiar(20);//saltar cabecera fichero
+        printer.copiar(cabFichero);//saltar cabecera fichero
         printer.print(Conversion.tamUTF8(f.getNombre()));
         printer.printM4(f.getNombre());
         printer.copiar(4);//saltar separador
@@ -120,7 +160,7 @@ public class Escritura implements Closeable {
 
     private void escribirBloque(Bloque b) throws IOException {
         //saltamos la basura entes del texto
-        for(int basura:b.getBasura()){
+        for (int basura : b.getBasura()) {
             printer.copiaM4(basura);
         }
         printer.setLeerEscritura(false);//Desincronizamos el input
@@ -159,7 +199,7 @@ public class Escritura implements Closeable {
             }
         }
         //Redondeamos el tamaño del bloque a multiplo de 4
-        int redondeo = (4 - (idioma.getTamIdioma() % 4))%4;
+        int redondeo = (4 - (idioma.getTamIdioma() % 4)) % 4;
         for (int i = 0; i < redondeo; i++) {
             printer.print((byte) 0);
         }

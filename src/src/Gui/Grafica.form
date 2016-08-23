@@ -173,6 +173,21 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="script">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Script"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="gestor_script">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Abrir gestor"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="gestor_scriptActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
         <Menu class="javax.swing.JMenu" name="herramientas">
           <Properties>
             <Property name="text" type="java.lang.String" value="Herramientas"/>
@@ -226,7 +241,10 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="0"/>
-    <Property name="title" type="java.lang.String" value="Dreamfall Assest Editor 1.1 beta"/>
+    <Property name="title" type="java.lang.String" value="Dreamfall Assest Editor 1.2"/>
+    <Property name="iconImages" type="java.util.List" editor="org.netbeans.modules.form.ComponentChooserEditor">
+      <ComponentRef name="null"/>
+    </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="menuSuperior"/>

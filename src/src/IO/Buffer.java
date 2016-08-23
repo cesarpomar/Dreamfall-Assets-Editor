@@ -48,7 +48,7 @@ public class Buffer {
     }
 
     /**
-     * Comprueba si quedam al menos bytes
+     * Comprueba si queda n al menos bytes
      *
      * @param n numero de bytes
      * @return true si quedan al menos n bytes, false en otro caso

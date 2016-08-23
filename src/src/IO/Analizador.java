@@ -7,6 +7,7 @@ import Datos.Idioma.Localizacion;
 import Datos.Textos.Fichero;
 import Datos.Textos.Idioma;
 import Datos.Textos.Linea;
+import IO.Exception.FormatException;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,46 +22,111 @@ public class Analizador implements Closeable {
     private File fichero;               //Assets
     private RandomAccessFile raf;       //Fichero de entrada
     private Assets assets;              //Clase para guardar los datos
+    ///Datos para el analisis
+    private int tamCabecera;            //tamaño de las cabeceras de fichero
+    private int tamIds;                 //tamñaode los ids antes de las lineas
+    private int espIdiomas;             //espacio antes de los idiomas
+    
 
     public Analizador(File file) throws FileNotFoundException {
         raf = new RandomAccessFile(file, "r");
         fichero = file;
     }
 
-    public Assets leerAssets() throws IOException {
-        leerCabeceraAssets();
-        buscarContenido();
+    public Assets leerAssets() throws Exception {
+        leerDefinicionAssets();
+        //Buscar el contenido segun la version
+        if (assets.getVersion().startsWith("4.")) {
+            buscarContenidoV4();
+        } else {
+            buscarContenidoV5();
+        }
         return assets;
     }
 
     /*
-     *Lee la cabecera del archivo assets
+     *Lee la cabecera de un archivo assets version unity 4
      */
-    private void leerCabeceraAssets() throws IOException {
-        assets = new Assets(fichero.getName(), fichero.getAbsolutePath());
-        Buffer buffer = new Buffer(44); //Facilitar conversion de bytes  
+    private void leerCabeceraV4Assets() throws IOException {
+        Buffer buffer = new Buffer(assets.getTamCabecera() - 8);//quitamos 8 de la version ya leida
         raf.read(buffer.getBuffer());
-        assets.setTamCabecera(buffer.readBigEndianInt());
-        assets.setTamAssets(buffer.readBigEndianInt());
-        buffer.skip(4);//Sata 4 byes inservibles.
-        assets.setInicioFicheros(buffer.readBigEndianInt());
-        buffer.skip(24);//Sata 24 bytes inservibles
+        buffer.skip(12);//Sata 16 bytes inservibles
         assets.setNumeroFicheros(buffer.readInt());
         /*Leemos las definiciones de los archivos de la cabecera*/
-        buffer = new Buffer(assets.getTamCabecera());
-        raf.read(buffer.getBuffer());
         Definicion[] definiciones = new Definicion[assets.getNumeroFicheros()];
         for (int i = 0; i < definiciones.length; i++) {
             definiciones[i] = new Definicion(buffer.readInt(), buffer.readInt(),
                     buffer.readInt(), buffer.readInt(), buffer.readInt());
         }
         assets.setDefiniciones(definiciones);
+                /*Definicones de la version*/
+        tamCabecera=20;
+        tamIds=48;
+    }
+
+    /*
+     *Lee la cabecera de un archivo assets version unity 5
+     */
+    private void leerCabeceraV5Assets() throws IOException {
+        Buffer buffer = new Buffer(assets.getTamCabecera() - 8);//quitamos 8 de la version ya leida
+        raf.read(buffer.getBuffer());
+        buffer.skip(4);//Saltamos el separador
+        buffer.skip(1);//Saltamos el byte en desuso
+        assets.setEspecificaciondeTipos(buffer.readInt());
+        for (int i = 0; i < assets.getEspecificaciondeTipos(); i++) {
+            int tipo = buffer.readInt();
+            if (tipo < 0) {//El numero indica laa longitud de la especificacion
+                buffer.skip(32);
+            } else {
+                buffer.skip(16);
+            }
+        }
+        assets.setNumeroFicheros(buffer.readInt());
+        /*Saltamos los bytes de mayor precision, por ahora es dicifil que haya mas de 2^32 archivos*/
+        buffer.skip(3);
+        /*Leemos las definiciones de los archivos de la cabecera*/
+        Definicion[] definiciones = new Definicion[assets.getNumeroFicheros()];
+        for (int i = 0; i < definiciones.length; i++) {
+            int id = buffer.readInt();
+            buffer.skip(4);//saltar campo en blanco
+            definiciones[i] = new Definicion(id, buffer.readInt(),
+                    buffer.readInt(), buffer.readInt(), buffer.readInt());
+            buffer.skip(4);//saltar campo en blanco
+        }
+        assets.setDefiniciones(definiciones);
+        /*Definicones de la version*/
+        tamCabecera=28;
+        tamIds=52;
+        espIdiomas=4;
+    }
+
+    /*
+     *Lee la definicion del archivo assets
+     */
+    private void leerDefinicionAssets() throws IOException, FormatException {
+        assets = new Assets(fichero.getName(), fichero.getAbsolutePath());
+        Buffer buffer = new Buffer(28); //Facilitar conversion de bytes  
+        raf.read(buffer.getBuffer());
+        assets.setTamCabecera(buffer.readBigEndianInt());
+        assets.setTamAssets(buffer.readBigEndianInt());
+        buffer.skip(4);//Sata 4 byes inservibles.
+        assets.setInicioFicheros(buffer.readBigEndianInt());
+        buffer.skip(4);//Sata 4 byes inservibles.
+        assets.setVersion(buffer.readString(8));
+        //Chequea la version a la que pertenece el assets
+        if (assets.getVersion().startsWith("4.")) {
+            leerCabeceraV4Assets();
+        } else if (assets.getVersion().startsWith("5.")) {
+            leerCabeceraV5Assets();
+        } else {
+            throw new FormatException();
+        }
     }
 
     /*
      *Busca un fichero dentro del assets
      */
-    private void buscarContenido() throws IOException {
+    private void buscarContenidoV4() throws IOException {
         byte[] cabFichero = new byte[20];  //Cabecera de un fichero
         List<Fichero> lista = new ArrayList<>(10);
         for (Definicion def : assets.getDefiniciones()) {
@@ -88,10 +154,41 @@ public class Analizador implements Closeable {
     }
 
     /*
+     *Busca un fichero dentro del assets
+     */
+    private void buscarContenidoV5() throws IOException {
+        byte[] cabFichero = new byte[20];  //Cabecera de un fichero
+        List<Fichero> lista = new ArrayList<>(10);
+        for (Definicion def : assets.getDefiniciones()) {
+            /*Moverse a inico bloque*/
+            raf.seek(assets.getInicioFicheros() + def.getPosicion());
+            raf.skipBytes(4);//Los primeros bytes son inutiles
+            raf.read(cabFichero);
+            raf.skipBytes(4);//Los ultimos igual
+            if (cabFichero[17] == (byte) 0x02//TEXTO
+                    && cabFichero[16] == (byte) 0x2A
+                    && cabFichero[12] == (byte) 0x01
+                    && cabFichero[8] == (byte) 0x01) {
+                lista.add(ficheroTexto(def));
+            } else if (cabFichero[17] == (byte) 0x4//IDIOMA
+                    && cabFichero[16] == (byte) 0xFA
+                    && cabFichero[12] == (byte) 0x2
+                    && cabFichero[8] == (byte) 0x1) {
+                ficheroIdioma(def);
+            }
+        }
+        if (!lista.isEmpty()) {
+            Fichero[] ficheros = new Fichero[lista.size()];
+            lista.toArray(ficheros);
+            assets.setFicheros(ficheros);
+        }
+    }
+
+    /*
      * Analiza en texto dentro de un fichero
      */
     private Fichero ficheroTexto(Definicion prop) throws IOException {
-        Buffer buffer = new Buffer(prop.getTam() - 20);//Restamos la cabecera
+        Buffer buffer = new Buffer(prop.getTam() - tamCabecera);//Restamos la cabecera
         /*Almacenar todo el fichero*/
         raf.read(buffer.getBuffer());
         //Leer nomber fichero
@@ -128,11 +225,11 @@ public class Analizador implements Closeable {
         int nIds = buffer.readInt();//Saltos identificadores si existen
         basura.add(4);
         for (int i = 0; i < nIds; i++) {
-            buffer.skip(48);
-            basura.add(48);
+            buffer.skip(tamIds);
+             basura.add(tamIds);
         }
         //Inicio de los idiomas
-        int inicioIdiomas=buffer.getPosicion();
+        int inicioIdiomas = buffer.getPosicion();
         Bloque bloque = new Bloque();//Leemos el numero idiomas del bloque
         bloque.setNumeroIdiomas(buffer.readInt());
         bloque.setIdiomas(new HashMap<>(bloque.getNumeroIdiomas() * 2));
@@ -140,7 +237,7 @@ public class Analizador implements Closeable {
             Idioma idioma = IdiomaTexto(buffer, bloque);
             bloque.getIdiomas().put(idioma.getIdioma(), idioma);
         }
-        bloque.setTamOrg(buffer.getPosicion()-inicioIdiomas);
+        bloque.setTamOrg(buffer.getPosicion() - inicioIdiomas);
         bloque.setFichero(f);
         bloque.setBasura(basura);
         return bloque;
@@ -196,6 +293,8 @@ public class Analizador implements Closeable {
         Localizacion localizacion = new Localizacion(buffer.readStringM4(buffer.readInt()));
         localizacion.setIndex(prop.getIndex());
         localizacion.setAssets(assets);
+        //Saltamos un espacio si lo hay
+        buffer.skip(espIdiomas);
         //guardar el tamaño
         localizacion.setTamOrg(buffer.getBuffer().length);
         String[] voces = new String[buffer.readInt()];

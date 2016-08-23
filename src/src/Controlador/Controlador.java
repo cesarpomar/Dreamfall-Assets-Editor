@@ -17,16 +17,13 @@ import Gui.Gui;
 import IO.Analizador;
 import IO.Conversion;
 import IO.Escritura;
+import IO.Exception.FormatException;
 import IO.XML;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.BufferOverflowException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.jdom2.JDOMException;
 
@@ -40,75 +37,6 @@ public class Controlador {
 
     public Controlador(Gui interfaz) {
         this.interfaz = interfaz;
-    }
-
-    private void crearIdiomaV(Idioma org, String nombre, String[] lineas) {
-        Bloque b = org.getBloque();
-        int tamIdioma = org.getTamIdioma();
-        Idioma idioma = new Idioma(nombre);//Nuevo idioma
-        idioma.setBloque(org.getBloque());
-        Linea[] orgLineas = org.getLineas();
-        Linea[] nLineas = new Linea[orgLineas.length];
-        idioma.setLineas(nLineas);
-        //Creamos un idoma imitando el de referencia
-        for (int i = 0; i < nLineas.length; i++) {
-            nLineas[i] = new Linea();
-            if (i < lineas.length && lineas[i] != null) {
-                nLineas[i].setTexto(lineas[i]);
-            } else {
-                nLineas[i].setTexto(" ");//Si no hay linea la escribimos vacia
-            }
-            //Copiamos el id de linea
-            nLineas[i].setId(orgLineas[i].getId());
-            try {
-                nLineas[i].setTamLinea(nLineas[i].getTexto().getBytes("UTF-8").length);
-            } catch (UnsupportedEncodingException ex) {
-            }
-            //Ajustamos el resto de tamaños
-            //Difencia entre el espacio de los tamaños que ocupan los tamaños
-            int difE = Linea.espacioTam(orgLineas[i].getTamLinea())
-                    - Linea.espacioTam(nLineas[i].getTamLinea());
-            //Diferencia entre el tamaño de las lineas
-            int difT = orgLineas[i].getTamLinea() - nLineas[i].getTamLinea();
-            //La diferencia entre el tam de lineas, menos la dif de lo que ocupa la anterior
-            nLineas[i].setTamPreLinea(orgLineas[i].getTamPreLinea() - difT - difE);
-            //Recalculamos el espacio teneion en cuenta el espacio de la anterior
-            difE += Linea.espacioTam(orgLineas[i].getTamPreLinea())
-                    - Linea.espacioTam(nLineas[i].getTamPreLinea());
-            nLineas[i].setTamTotal(orgLineas[i].getTamTotal() - difT - difE);
-            difE += Linea.espacioTam(orgLineas[i].getTamTotal())
-                    - Linea.espacioTam(nLineas[i].getTamTotal());
-            //Calculamos tamaño del bloque
-            tamIdioma -= difE + difT;
-            nLineas[i].setFinLinea(orgLineas[i].isFinLinea());
-        }
-        idioma.setTamIdioma(tamIdioma);
-        int aumentoPadres = idioma.getTamIdioma();//Aumento de los fichero que lo contienen
-        Idioma idiomaExistente = b.getIdiomas().get(idioma.getIdioma());
-        if (idiomaExistente != null) {
-            aumentoPadres -= idiomaExistente.getTamIdioma();
-        } else {
-            //Si el idioma no existe la cabecera del idioma tambien ocupa
-            aumentoPadres += idioma.getEspacioIdioma() - idioma.getTamIdioma();
-            b.setNumeroIdiomas(b.getNumeroIdiomas() + 1);
-        }
-        //Guardamos el idioma
-        b.getIdiomas().put(idioma.getIdioma(), idioma);
-        //Aumentalos a sus padres
-        Fichero f = b.getFichero();
-        Assets a = f.getAssets();
-        //aumentamos el tamaño del fichero
-        Definicion def = a.getDefiniciones()[f.getPosicion() - 1];
-        //calculamos su espacio en bloques de 4
-        double bloques = (def.getTam() + aumentoPadres) / 4.0 - (def.getTam() / 4.0);
-        int desplazamiento = (int) Math.ceil(bloques) * 4; //numero de bloques
-        def.setTam(def.getTam() + aumentoPadres);
-        if (desplazamiento != 0) {
-            //desplazar puntero
-            avanzarDefiniciones(a.getDefiniciones(), f.getPosicion(), desplazamiento);
-            //aumentamos tamaño de assests
-            a.setTamAssets(a.getTamAssets() + desplazamiento);
-        }
     }
 
     /**
@@ -330,9 +258,11 @@ public class Controlador {
             JOptionPane.showMessageDialog(interfaz, "Ha ocurrido un error de lectura.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (FormatException ex) {
+            JOptionPane.showMessageDialog(interfaz, "El archivo no es compatible con la aplicación.\n",
+                    "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(interfaz, "El archivo Assets esta corrupto o no es compatible"
-                    + "con esta apliacion.\n",
+            JOptionPane.showMessageDialog(interfaz, "El archivo Assets esta corrupto.\n",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
 
@@ -370,6 +300,11 @@ public class Controlador {
 
     public void escribirAssets(File path, Assets a) {
         try {
+            if (a.getVersion().startsWith("5.")) {
+                JOptionPane.showMessageDialog(interfaz, "No puedes guardar un assets unity 5.\n",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             Escritura esc = new Escritura(a, path);
             if (esc.escribir()) {
                 JOptionPane.showMessageDialog(interfaz, "El Assets se ha guardado correctamente\n",
@@ -388,7 +323,7 @@ public class Controlador {
             JOptionPane.showMessageDialog(interfaz, "Ha ocurrido un error de escritura.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(interfaz, "Ha ocurrido un error inesperado durante la escritura.\n"
                     + "Error:\n" + toMl(ex.getMessage()),
                     "Error", JOptionPane.ERROR_MESSAGE);
@@ -628,7 +563,7 @@ public class Controlador {
         try {
             if (!new File(path.getAbsolutePath() + ".ref").exists()) {
                 JOptionPane.showMessageDialog(interfaz, "No se ha encontrado el archivo .ref\n",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                        "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             XML.actualizarXmlRef(path);

@@ -12,9 +12,16 @@ import Datos.Interfaz.Nodo;
 import Datos.Textos.Bloque;
 import Datos.Textos.Fichero;
 import Datos.Textos.Idioma;
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -80,6 +87,10 @@ public class Gui extends javax.swing.JFrame {
         herramientas = new javax.swing.JMenu();
         cambiarIdiomaXml = new javax.swing.JMenuItem();
         actualizarXmlRef = new javax.swing.JMenuItem();
+        about = new javax.swing.JMenu();
+        clandlan = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         guardarComo.setText("Guardar como");
         guardarComo.addActionListener(new java.awt.event.ActionListener() {
@@ -162,7 +173,7 @@ public class Gui extends javax.swing.JFrame {
         popSubtitulo.add(borrarSubtitulo);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Dreamfall Assest Editor 1.0");
+        setTitle("Dreamfall Assest Editor 1.1 beta");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -236,6 +247,27 @@ public class Gui extends javax.swing.JFrame {
         herramientas.add(actualizarXmlRef);
 
         menuSuperior.add(herramientas);
+
+        about.setText("About");
+
+        clandlan.setText("Foro Traduccion");
+        clandlan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clandlanActionPerformed(evt);
+            }
+        });
+        about.add(clandlan);
+        about.add(jSeparator1);
+
+        jMenuItem1.setText("About");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        about.add(jMenuItem1);
+
+        menuSuperior.add(about);
 
         setJMenuBar(menuSuperior);
 
@@ -409,7 +441,7 @@ public class Gui extends javax.swing.JFrame {
         chooserXml.setSelectedFile(new File(f.getNombre() + "_" + idioma.getIdioma()
                 + "_" + ((Nodo) nodo.getUserObject()).getNombre() + ".xml"));
         if (chooserXml.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            
+
             controlador.exportar(chooserXml.getSelectedFile(), idioma);
         }
     }//GEN-LAST:event_exportarBloqueActionPerformed
@@ -497,6 +529,21 @@ public class Gui extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_actualizarXmlRefActionPerformed
 
+    private void clandlanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clandlanActionPerformed
+        try {
+            Desktop.getDesktop().browse(new URI("http://www.clandlan.net/foros/topic/76661-traduccion-dreamfall-chapters/"));
+        } catch (Exception ex) {
+        }
+    }//GEN-LAST:event_clandlanActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        String mensaje="Yo, Dreamfall Assets Editor fui creado por César Pomar con el unico propósito "
+                + "\nde ayudarte a traducir Dreamfall Chapters al castellano. Si me encuentras algún error "
+                + "\no quieres que aprenda a hacer más cosas, encontrarás a mi creador en el foro de Clan Dlan.";
+        
+        JOptionPane.showMessageDialog(this, mensaje, "About", -1);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -527,6 +574,7 @@ public class Gui extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu about;
     private javax.swing.JMenuItem abrirAssets;
     private javax.swing.JMenuItem abrirCarpeta;
     private javax.swing.JMenuItem actualizarXmlRef;
@@ -539,12 +587,15 @@ public class Gui extends javax.swing.JFrame {
     private javax.swing.JMenuItem cambiarIdiomaXml;
     private javax.swing.JMenuItem cerrarAssets;
     private javax.swing.JMenuItem cerrarTodo;
+    private javax.swing.JMenuItem clandlan;
     private javax.swing.JMenuItem exportarBloque;
     private javax.swing.JMenuItem exportarIdioma;
     private javax.swing.JMenuItem guardarComo;
     private javax.swing.JMenu herramientas;
     private javax.swing.JMenuItem importarBloque;
     private javax.swing.JMenuItem importarIdioma;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuBar menuSuperior;
     private javax.swing.JMenuItem nuevoIdioma;
     private javax.swing.JPopupMenu popAssets;
@@ -560,7 +611,7 @@ public class Gui extends javax.swing.JFrame {
     private JFileChooser chooserAssets;
     private JFileChooser chooserXml;
     private Controlador controlador;
-    
+
     private void cargarChoosets() {
         //de assets
         chooserAssets = new JFileChooser();
@@ -569,7 +620,7 @@ public class Gui extends javax.swing.JFrame {
         chooserXml = new JFileChooser();
         chooserXml.setFileFilter(new FileNameExtensionFilter("XML (*.xml)", "xml"));
     }
-    
+
     private void salir() {
         Object[] opciones = {"Aceptar", "Cancelar"};
         int opcion = JOptionPane.showOptionDialog(rootPane, "¿Estás seguro de que deseas salir?, "
@@ -580,11 +631,11 @@ public class Gui extends javax.swing.JFrame {
             System.exit(0);
         }
     }
-    
+
     public DefaultTreeModel getModelo() {
         return (DefaultTreeModel) arbol.getModel();
     }
-    
+
     public DefaultMutableTreeNode getSelecion() {
         TreePath path = arbol.getSelectionPath();
         if (path != null) {
@@ -592,7 +643,7 @@ public class Gui extends javax.swing.JFrame {
         }
         return null;
     }
-    
+
     public Assets[] getAssets() {
         //obtenemos las raiz
         DefaultMutableTreeNode raiz = (DefaultMutableTreeNode) getModelo().getRoot();
@@ -608,7 +659,7 @@ public class Gui extends javax.swing.JFrame {
         }
         return assets;
     }
-    
+
     private void cargarLocalizacion(DefaultMutableTreeNode assets, Localizacion l) {
         DefaultTreeModel modelo = getModelo();
         DefaultMutableTreeNode fichero = new DefaultMutableTreeNode(new Nodo("Subtítulos", l, popLocalizacion));
@@ -618,7 +669,7 @@ public class Gui extends javax.swing.JFrame {
                     fichero, fichero.getChildCount());
         }
     }
-    
+
     private void cargarFichero(DefaultMutableTreeNode fichero, Fichero f) {
         DefaultTreeModel modelo = getModelo();
         /*hashMap para agrupar bloques por idioma en vez de idiomas por bloque*/
@@ -638,9 +689,9 @@ public class Gui extends javax.swing.JFrame {
                         idioma, idioma.getChildCount());
             }
         }
-        
+
     }
-    
+
     public void nuevoAssets(Assets a) {
         DefaultTreeModel modelo = (DefaultTreeModel) arbol.getModel();
         DefaultMutableTreeNode raiz = (DefaultMutableTreeNode) modelo.getRoot();
@@ -671,11 +722,9 @@ public class Gui extends javax.swing.JFrame {
 
 ///////////////////////////////PRUEBAS///////////////////////////////////    
     public void mostrarAssetsTestFile() {
-        controlador.leerAssets(new File("D:\\Program Files (x86)\\Dreamfall Chapter"
-         + "s - Books 1-3\\Dreamfall Chapters_Data\\resources.assets"));
-        controlador.leerAssets(new File("D:\\Program Files (x86)\\Dreamfall Chapter"
-                + "s - Books 1-3\\Dreamfall Chapters_Data\\sharedassets1.assets"));
-        
+        controlador.leerAssets(new File("D:\\Program Files (x86)\\Dreamfall Chapters Special Edition\\Dreamfall Chapters_Data\\sharedassets57.assets"));
+        controlador.leerAssets(new File("D:\\Users\\Informatica\\otros\\Assert\\Unity 5\\sharedassets57.assets"));
+
     }
-    
+
 }

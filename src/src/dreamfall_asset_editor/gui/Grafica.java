@@ -167,7 +167,7 @@ public final class Grafica extends javax.swing.JFrame implements Igui {
         popSubtitulo.add(borrarSubtitulo);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Dreamfall Assest Editor 1.4");
+        setTitle("Dreamfall Assest Editor 1.4.1");
         setIconImages(null);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {

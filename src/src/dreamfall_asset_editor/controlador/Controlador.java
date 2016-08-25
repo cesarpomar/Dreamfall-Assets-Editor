@@ -227,14 +227,17 @@ public final class Controlador {
      * @param idioma Idioma a borrar
      */
     public void removeLocalizacion(Localizacion l, String idioma) {
-        Assets a = l.getAssets();
+        //Si el idioma no existe no hacemos nada
+        if(!Arrays.asList(l.getSubtitulos()).contains(idioma)){
+            return;
+        }
         //Coge el numero el subtitulos
         int nSubs = l.getSubtitulos().length;
         String[] nuevos = new String[nSubs - 1];
         int i = 0;
         //Copiamos los subtitulos
         for (String s : l.getSubtitulos()) {
-            if (s.equals(idioma)) {
+            if (!s.equals(idioma)) {
                 nuevos[i++] = s;
             }
         }
@@ -514,8 +517,11 @@ public final class Controlador {
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    /*
-    Ajusta la cantidad de caracteres que se muestran en una linea
+    /**
+     * Ajusta la cantidad de caracteres que se muestran en una linea
+     *
+     * @param tex Texto
+     * @return Texto ajustado
      */
     private static String toMl(String tex) {
         if (tex == null) {
@@ -529,8 +535,12 @@ public final class Controlador {
         return lineas.toString();
     }
 
-    /*
-    Cambiar el idioma de un xml actualizando el orden de las lineas
+    /**
+     * Cambiar el idioma de un xml actualizando el orden de las lineas
+     *
+     * @param path Fichero
+     * @param nuevo Idioma nuevo
+     * @param assets Assets
      */
     public void cambiarIdioma(File path, String nuevo, Assets[] assets) {
         try {
@@ -557,7 +567,7 @@ public final class Controlador {
                         + "tener el Assets correspondiente abierto.\n", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            t.setLineas(ajustarLineasO(org.getLineas(), dest.getLineas(), t));
+            t.setLineas(ajustarLineas(org.getLineas(), dest.getLineas(), t));
             File salida = new File(path.getAbsolutePath() + ".tmp");
             t.setIdioma(nuevo);
             XML.escribir(salida, t);
@@ -580,10 +590,15 @@ public final class Controlador {
         }
     }
 
-    /*
-    Cambiar el orden de las lineas del idioma actual al nuevo
+    /**
+     * Cambiar el orden de las lineas del idioma actual al nuevo
+     *
+     * @param org Lineas del idioma original
+     * @param dest Lineas del idioma destino
+     * @param t Textos importados xml
+     * @return Texto lineas
      */
-    private String[] ajustarLineasO(Linea[] org, Linea[] dest, Textos t) {
+    private String[] ajustarLineas(Linea[] org, Linea[] dest, Textos t) {
         String[] listas = new String[org.length];
         HashMap<String, Integer> posicion = new HashMap<>(listas.length);
         int i = 0;
@@ -598,8 +613,10 @@ public final class Controlador {
         return listas;
     }
 
-    /*
-    Actualiza un xml con .ref de la version extractor a la editor
+    /**
+     * Actualiza un xml con .ref de la version extractor a la editor
+     *
+     * @param path Ruta del xml
      */
     public void actualizarXmlRef(File path) {
         try {
@@ -663,6 +680,13 @@ public final class Controlador {
         return m;
     }
 
+    /**
+     * Guarda un script para su posterior edición
+     *
+     * @param d Dialogo
+     * @param ruta Ruta
+     * @param comandos Comandos
+     */
     public static void guardarScript(JDialog d, File ruta, String[] comandos) {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(ruta));
@@ -678,6 +702,13 @@ public final class Controlador {
         }
     }
 
+    /**
+     * Exporta un archivo para su ejecucion de forma nativa en el sistema
+     *
+     * @param d Dialogo
+     * @param ruta Ruta
+     * @param comandos Comandos
+     */
     public static void exportarScript(JDialog d, File ruta, String[] comandos) {
         String jar = "DreamfallAssetsEditor.jar";
         String sep = System.getProperty("file.separator");
@@ -699,6 +730,13 @@ public final class Controlador {
         }
     }
 
+    /**
+     * Abre un script para su edicion o ejecución
+     *
+     * @param d Dialogo
+     * @param ruta Ruta
+     * @return Comandos
+     */
     public static String[] abrirScript(JDialog d, File ruta) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(ruta));
@@ -716,6 +754,12 @@ public final class Controlador {
         return null;
     }
 
+    /**
+     * Ejecuta un script
+     *
+     * @param d Dialogo
+     * @param comandos Comandos
+     */
     public static void ejecutarScript(JDialog d, String[] comandos) {
         List<String> args = new ArrayList<>(comandos.length * 4);
         StringBuilder sb = new StringBuilder(300);

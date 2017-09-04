@@ -41,9 +41,9 @@ import org.jdom2.JDOMException;
  * @author César Pomar
  */
 public final class Controlador {
-
+    
     private Igui interfaz;
-
+    
     public Controlador(Igui interfaz) {
         this.interfaz = interfaz;
     }
@@ -66,11 +66,8 @@ public final class Controlador {
         //Creamos un idoma imitando el de referencia
         for (int i = 0; i < nLineas.length; i++) {
             nLineas[i] = new Linea();
-            nLineas[i].setFinLinea(orgLineas[i].isFinLinea());
-            int finLinea = 0;//aumento si hay fin de linea
-            if (nLineas[i].isFinLinea()) {
-                finLinea = 2;
-            }
+            nLineas[i].setFinLinea(orgLineas[i].getFinLinea());
+            int finLinea = nLineas[i].getFinLinea().length;//aumento si hay fin de linea
             if (i < lineas.length && lineas[i] != null) {
                 nLineas[i].setTexto(lineas[i]);
             } else {
@@ -88,7 +85,7 @@ public final class Controlador {
                     + Linea.espacioTam(nLineas[i].getTamPreLinea()) + nLineas[i].getTamPreLinea());
             //Tam idioma+(12 +Tam Total + total)
             tamIdioma += 1 + Linea.espacioTam(nLineas[i].getTamTotal()) + nLineas[i].getTamTotal();
-
+            
         }
         tamIdioma += b.getId().length;//añadimos el tamaño del id del bloque
         idioma.setTamIdioma(tamIdioma);
@@ -155,7 +152,7 @@ public final class Controlador {
             defs[i].setPosicion(defs[i].getPosicion() + desplazamiento);
         }
     }
-
+    
     private Textos importarXml(File path) {
         try {
             Textos t = XML.leer(path);
@@ -228,7 +225,7 @@ public final class Controlador {
      */
     public void removeLocalizacion(Localizacion l, String idioma) {
         //Si el idioma no existe no hacemos nada
-        if(!Arrays.asList(l.getSubtitulos()).contains(idioma)){
+        if (!Arrays.asList(l.getSubtitulos()).contains(idioma)) {
             return;
         }
         //Coge el numero el subtitulos
@@ -245,10 +242,10 @@ public final class Controlador {
         ajustarLocalizacion(l, nuevos.length);
         l.setSubtitulos(nuevos);
         interfaz.mostrar("Subtitulo borrado correctamente, a partir de ahora el juego"
-                + "ignorara bloques con el nombre '" + idioma + "'",
+                + " ignorara bloques con el nombre '" + idioma + "'",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
-
+    
     private void ajustarLocalizacion(Localizacion l, int n) {
         Assets a = l.getAssets();
         //Reservamos espacio para el idioma 4 y su tamaño 4
@@ -322,7 +319,7 @@ public final class Controlador {
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    
     public void escribirAssets(File path, Assets a) {
         try {
             Escritura esc = new Escritura(a, path);
@@ -345,7 +342,7 @@ public final class Controlador {
                     "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
             interfaz.mostrar("Ha ocurrido un error inesperado durante la escritura.\n"
-                    + "Error:\n" + toMl(ex.getMessage()),
+                    + "Error:\n" + toMl(ex.toString()),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -463,7 +460,7 @@ public final class Controlador {
                     break;
                 }
             }
-
+            
         }
         interfaz.mostrar("Se han cargado " + cargados + " xml de " + xml.length + "xml.\n",
                 "Terminado", JOptionPane.INFORMATION_MESSAGE);
@@ -511,7 +508,9 @@ public final class Controlador {
      */
     public void borrar(Fichero f, String idioma) {
         for (Bloque b : f.getBloque()) {
-            borrarIdioma(b.getIdiomas().get(idioma));
+            if (b.getIdiomas().containsKey(idioma)) {
+                borrarIdioma(b.getIdiomas().get(idioma));
+            }
         }
         interfaz.mostrar("El idioma '" + idioma + "' se ha borrado correctamente\n",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -713,7 +712,7 @@ public final class Controlador {
         String jar = "DreamfallAssetsEditor.jar";
         String sep = System.getProperty("file.separator");
         String java = "\"" + System.getProperty("java.home") + sep + "bin" + sep + "java\"";
-
+        
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(ruta));
             bw.write(java + " ");

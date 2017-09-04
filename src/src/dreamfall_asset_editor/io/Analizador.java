@@ -274,8 +274,9 @@ public final class Analizador implements Closeable {
         linea.setTamLinea(buffer.readCompressInt());
         linea.setTexto(buffer.readString(linea.getTamLinea()));//Leer texto
         if (buffer.hasNext(1) && buffer.get() == 0x10 && buffer.getPosicion() != fin) {//Si la liena termina con 10 02
-            buffer.skip(2);//lo saltamos
-            linea.setFinLinea(true);//y lo tenemos en cuenta
+            linea.setFinLinea(buffer.readBytes(2));
+        }else{
+            linea.setFinLinea(new byte[0]);
         }
         return linea;
     }

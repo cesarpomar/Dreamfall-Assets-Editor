@@ -166,10 +166,7 @@ public final class Escritura implements Closeable {
             printer.print((byte) 0xA);
             printer.printCompressInt(l.getTamLinea());
             printer.print(l.getTexto());
-            if (l.isFinLinea()) {
-                printer.print((byte) 0x10);
-                printer.print((byte) 0x02);
-            }
+            printer.print(l.getFinLinea());
         }
         //Redondeamos el tamaño del bloque a multiplo de 4
         int redondeo = (4 - (idioma.getTamIdioma() % 4)) % 4;

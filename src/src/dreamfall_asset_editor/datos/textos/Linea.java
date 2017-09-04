@@ -12,7 +12,7 @@ public final class Linea {
     private int tamPreLinea;    //tamaño del texto de la linea con su tamaño
     private int tamLinea;       //tamaño del texto de una linea
     private String texto;       //texto de la linea
-    private boolean finLinea;   //la linea contiene 10 02 al final
+    private byte[] finLinea;   //la linea contiene 10 02 al final
 
     public int getTamTotal() {
         return tamTotal;
@@ -54,11 +54,11 @@ public final class Linea {
         this.texto = texto;
     }
 
-    public boolean isFinLinea() {
+    public byte[] getFinLinea() {
         return finLinea;
     }
 
-    public void setFinLinea(boolean finLinea) {
+    public void setFinLinea(byte[] finLinea) {
         this.finLinea = finLinea;
     }
 

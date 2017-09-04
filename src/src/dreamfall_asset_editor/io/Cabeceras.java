@@ -70,6 +70,9 @@ public final class Cabeceras {
         add(IDIOMA, "5.2.4f1", new byte[]{(byte) 0x4, (byte) 0xFA, (byte) 0x2, (byte) 0x1});
         add(TEXTO, "5.3.5p2", new byte[]{(byte) 0x02, (byte) 0x24, (byte) 0x01, (byte) 0x01});
         add(IDIOMA, "5.3.5p2", new byte[]{(byte) 0x4, (byte) 0xDC, (byte) 0x1, (byte) 0x1});
+        add(TEXTO, "5.3.5p2", new byte[]{(byte) 0x4, (byte) 0xDC, (byte) 0x1, (byte) 0x1});
+        add(IDIOMA, "5.4.5p4", new byte[]{(byte) 0x5, (byte) 0x5, (byte) 0x1, (byte) 0x1});
+        add(TEXTO, "5.4.5p4", new byte[]{(byte) 0x2, (byte) 0x37, (byte) 0x1, (byte) 0x1});
     }
 
     private void add(String tipo, String version, byte[] cabecera) {
